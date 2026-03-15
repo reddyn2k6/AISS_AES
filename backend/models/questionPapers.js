@@ -67,47 +67,7 @@ const questionSchema = new mongoose.Schema({
 
 const questionPaperSchema = new mongoose.Schema({
 
-  subjectName: {
-    type: String,
-    required: true
-  },
-
-  subjectCode: {
-    type: String,
-    required: true
-  },
-
-  course: {
-    type: String,
-    required: true
-  },
-
-  semester: {
-    type: Number,
-    required: true
-  },
-
-  examType: {
-    type: String,
-    enum:[
-      "Mid Semester Examination",
-      "End Semester Examination",
-      "Special Mid Semester Examination",
-      "Special End Semester Examination"
-    ]
-  },
-
-  date: {
-    type: Date,
-    required: true
-  },
-
-  maxMarks: {
-    type: Number,
-    required: true
-  },
-
-  instructions: [String],
+ 
 
   // 2D array -> sections
   sections: [[questionSchema]],
