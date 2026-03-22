@@ -30,7 +30,9 @@ const app = express();
 
 
 const allowedOrigins = [
-    'http://localhost:5173',         // local React dev
+    'http://localhost:5173', 
+    'https://aiss-aes-8ju1.vercel.app'
+    // local React dev
 ];
 app.use(cors({
     origin: allowedOrigins,
