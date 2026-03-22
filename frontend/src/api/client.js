@@ -44,7 +44,7 @@ client.interceptors.response.use(
 
     // Attach the clean message directly to the error object
     error.message = errorMessage;
-    
+
     // Ensure components relying on `err.response?.data?.message` still work flawlessly
     // particularly for network errors where error.response is undefined
     if (!error.response) {
@@ -65,9 +65,10 @@ client.interceptors.response.use(
 // Since backend `routes/facultyAuth.js` did not mount the `logoutFaculty` 
 // controller, we perform a frontend mock that safely clears caches on our end.
 export const authAPI = {
-  login:      (data) => client.post('/faculty/auth/login', data),
-  verifyOTP:  (data) => client.post('/faculty/auth/verify-otp', data),
-  logout:     () => Promise.resolve({ data: { message: "Local logout cache clear" } }),
+  register: (data) => client.post('/faculty/auth/register', data),
+  login: (data) => client.post('/faculty/auth/login', data),
+  verifyOTP: (data) => client.post('/faculty/auth/verify-otp', data),
+  logout: () => Promise.resolve({ data: { message: "Local logout cache clear" } }),
 };
 
 /* ══════════════════════════════════════════════════════
@@ -75,16 +76,15 @@ export const authAPI = {
 ══════════════════════════════════════════════════════ */
 // These correspond exactly to the `/faculty/...` backend routes mounted in `index.js`
 export const facultyAPI = {
-  register:     (data) => client.post('/faculty/auth/register', data),
-  getMe:        () => client.get('/faculty/me'),
-  updateProfile:(data) => client.put('/faculty/profile', data),
+  getMe: () => client.get('/faculty/me'),
+  updateProfile: (data) => client.put('/faculty/profile', data),
   getApprovals: () => client.get('/faculty/approvals'),
-  
+
   // Notice these are now POST as defined in `facultyRoutes.js` 
   // and sending the explicitly expected keys `facultyId` and `rejectedReason`.
-  approve:      (id) => client.post(`/faculty/approve`, { facultyId: id }),
-  reject:       (id, reason) => client.post(`/faculty/reject`, { facultyId: id, rejectedReason: reason }),
-  
+  approve: (id) => client.post(`/faculty/approve`, { facultyId: id }),
+  reject: (id, reason) => client.post(`/faculty/reject`, { facultyId: id, rejectedReason: reason }),
+
   getDeptFaculty: () => client.get('/faculty'),
 };
 
@@ -99,9 +99,9 @@ export const hodAPI = {
    Super Admin API
 ══════════════════════════════════════════════════════ */
 export const superAdminAPI = {
-  transfer:         (targetFacultyId, newDepartment) => client.post('/faculty/superadmin/transfer', { facultyId: targetFacultyId, newDepartment }),
-  makeHOD:          (targetFacultyId) => client.post('/faculty/superadmin/make-hod', { facultyId: targetFacultyId }),
-  getCollegeFaculty:() => client.get('/faculty/superadmin/college'),
+  transfer: (targetFacultyId, newDepartment) => client.post('/faculty/superadmin/transfer', { facultyId: targetFacultyId, newDepartment }),
+  makeHOD: (targetFacultyId) => client.post('/faculty/superadmin/make-hod', { facultyId: targetFacultyId }),
+  getCollegeFaculty: () => client.get('/faculty/superadmin/college'),
 };
 
 export default client;
