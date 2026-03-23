@@ -13,7 +13,7 @@ import styles from './DashboardLayout.module.css';
    Role view switching — HOD only
 ────────────────────────────────────────────────────────── */
 const ROLE_VIEWS = {
-  superAdmin: [], // Full access — no view switching needed
+  superAdmin: [],
   hod: [
     { key: 'hod',     label: 'HOD View',    icon: Shield,        base: '/hod'     },
     { key: 'faculty', label: 'Faculty View', icon: GraduationCap, base: '/faculty' },
@@ -37,9 +37,9 @@ const detectViewMode = (pathname) => {
    COMPONENT
 ────────────────────────────────────────────────────────── */
 const DashboardLayout = ({ navItems, children }) => {
-  const navigate   = useNavigate();
-  const location   = useLocation();
-  const { toast }  = useToast();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { toast } = useToast();
 
   const [profile,      setProfile]      = useState(null);
   const [loading,      setLoading]      = useState(true);
@@ -68,7 +68,8 @@ const DashboardLayout = ({ navItems, children }) => {
        4. If fresh fetch fails AND no cache → redirect to login
   ── */
   useEffect(() => {
-    let alive = true;
+    let alive    = true;
+    let hadCache = false; // ✅ plain variable — not subject to stale closure
 
     const load = async () => {
       // Step 1 — try encrypted cache
@@ -77,13 +78,14 @@ const DashboardLayout = ({ navItems, children }) => {
         const cached = await secureStorage.get(cachedRole);
         if (cached?.profile && alive) {
           setProfile(cached.profile);
-          setLoading(false); // show UI instantly from cache
+          setLoading(false);
+          hadCache = true; // ✅ mark before async gap
         }
       }
 
       // Step 2 — always refresh from server in background
       try {
-        const r   = await facultyAPI.getMe();
+        const r    = await facultyAPI.getMe();
         const prof = r.data.profile;
         if (!alive) return;
         setProfile(prof);
@@ -93,8 +95,8 @@ const DashboardLayout = ({ navItems, children }) => {
         await secureStorage.set(prof.role, { profile: prof, cachedAt: Date.now() });
       } catch {
         if (!alive) return;
-        // Only redirect if we had no cached profile either
-        if (!profile) {
+        // ✅ hadCache is reliably set — no stale closure issue
+        if (!hadCache) {
           toast('Session expired. Please log in again.', 'error');
           secureStorage.clear();
           navigate('/login');
@@ -111,7 +113,7 @@ const DashboardLayout = ({ navItems, children }) => {
   /* ── Logout — clear all encrypted caches ── */
   const handleLogout = async () => {
     try { await authAPI.logout(); } catch { /* ignore */ }
-    secureStorage.clear();             // wipe all role caches
+    secureStorage.clear();
     navigate('/login');
   };
 
@@ -184,7 +186,6 @@ const DashboardLayout = ({ navItems, children }) => {
                   >
                     <span className={styles.navIcon}>{item.icon}</span>
                     <span className={styles.navLabel}>{item.label}</span>
-                    {/* Pending badge dot */}
                     {item.badge > 0 && (
                       <span className={styles.navBadge} title={`${item.badge} pending`}>
                         {item.badge > 9 ? '9+' : item.badge}
@@ -204,8 +205,8 @@ const DashboardLayout = ({ navItems, children }) => {
             <p className={styles.switcherHeading}>Switch View</p>
             <div className={styles.switchBtns}>
               {availViews.map(view => {
-                const Icon    = view.icon;
-                const isCurr  = currentView === view.key;
+                const Icon   = view.icon;
+                const isCurr = currentView === view.key;
                 return (
                   <button
                     key={view.key}
@@ -293,7 +294,7 @@ const DashboardLayout = ({ navItems, children }) => {
               </div>
             )}
 
-            {/* Notification bell (shows total pending badge count) */}
+            {/* Notification bell */}
             {totalBadge > 0 && (
               <div className={styles.bellWrap} title={`${totalBadge} pending approval${totalBadge > 1 ? 's' : ''}`}>
                 <Bell size={17} />
