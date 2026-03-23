@@ -68,7 +68,7 @@ export const authAPI = {
   register: (data) => client.post('/faculty/auth/register', data),
   login: (data) => client.post('/faculty/auth/login', data),
   verifyOTP: (data) => client.post('/faculty/auth/verify-otp', data),
-  logout: () => Promise.resolve({ data: { message: "Local logout cache clear" } }),
+  logout: () => client.post('/faculty/auth/logout'),
 };
 
 /* ══════════════════════════════════════════════════════

@@ -1,5 +1,5 @@
 import express from "express";
-import {registerFaculty,loginFaculty,verifyOTP, seedSuperAdmin} from "../controllers/authentication/facultyAuth.js"
+import {registerFaculty,loginFaculty,verifyOTP, logoutFaculty, seedSuperAdmin} from "../controllers/authentication/facultyAuth.js"
 
 
 const facultyAuthRouter = express.Router();
@@ -7,6 +7,7 @@ const facultyAuthRouter = express.Router();
 facultyAuthRouter.post("/register", registerFaculty);
 facultyAuthRouter.post("/login", loginFaculty);
 facultyAuthRouter.post("/verify-otp", verifyOTP);
+facultyAuthRouter.post("/logout", logoutFaculty);
 
 // Hidden developer route to create the first Super Admin
 facultyAuthRouter.post("/seed-admin", seedSuperAdmin);

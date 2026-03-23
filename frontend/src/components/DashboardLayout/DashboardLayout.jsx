@@ -93,11 +93,16 @@ const DashboardLayout = ({ navItems, children }) => {
         // Update encrypted cache
         secureStorage.setRole(prof.role);
         await secureStorage.set(prof.role, { profile: prof, cachedAt: Date.now() });
-      } catch {
+      } catch (err) {
         if (!alive) return;
         // ✅ hadCache is reliably set — no stale closure issue
         if (!hadCache) {
-          toast('Session expired. Please log in again.', 'error');
+          // Only show "session expired" if the user actually had a session before
+          // (i.e., a role was stored). Otherwise, just redirect silently.
+          const hadPreviousSession = !!secureStorage.getRole();
+          if (hadPreviousSession) {
+            toast('Session expired. Please log in again.', 'error');
+          }
           secureStorage.clear();
           navigate('/login');
         }
