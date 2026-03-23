@@ -1,14 +1,37 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ShieldCheck, ArrowRight, BrainCircuit, Eye, EyeOff } from 'lucide-react';
-import { authAPI } from '../../api/client';
+import { authAPI, facultyAPI } from '../../api/client';
 import { useToast } from '../../components/Toast/Toast';
 import { secureStorage } from '../../utils/secureStorage';
 import styles from './Login.module.css';
 
+const ROLE_ROUTES = {
+  superAdmin: '/superadmin',
+  hod: '/hod',
+  faculty: '/faculty',
+};
+
 const Login = () => {
   const navigate      = useNavigate();
   const { toast }     = useToast();
+
+  /* ── Auto-redirect if already authenticated ── */
+  useEffect(() => {
+    const cachedRole = secureStorage.getRole();
+    if (!cachedRole) return;
+    // Verify that the session cookie is still valid
+    facultyAPI.getMe()
+      .then(res => {
+        const role = res.data.profile?.role || cachedRole;
+        navigate(ROLE_ROUTES[role] || '/faculty', { replace: true });
+      })
+      .catch(() => {
+        // Cookie expired — clear stale role, stay on login
+        secureStorage.clear();
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [step, setStep]         = useState(1); // 1 = credentials, 2 = OTP
   const [email, setEmail]       = useState('');

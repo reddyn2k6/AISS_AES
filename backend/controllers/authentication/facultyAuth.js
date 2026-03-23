@@ -176,7 +176,7 @@ export const verifyOTP = async(req,res)=>{
     res.cookie("token", token, {
       httpOnly: true,     // cannot be accessed by JS
       secure: process.env.NODE_ENV === "production", // only HTTPS in production
-      sameSite: "strict", // CSRF protection
+      sameSite: "lax", // CSRF protection
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -195,7 +195,7 @@ export const logoutFaculty = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
   });
   res.status(200).json({ message: "Logged out successfully" });
 };

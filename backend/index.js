@@ -18,6 +18,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
   "https://aiss-aes-8ju1.vercel.app"
 ];
 
@@ -40,5 +41,11 @@ app.use("/faculty/auth", facultyAuthRouter);
 app.use("/faculty", facultyRouter);
 app.use("/faculty/hod", hodRouter);
 app.use("/faculty/superadmin", superAdminRouter);
+
+// Local dev server — Vercel uses the export below instead
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Backend running on http://localhost:${PORT}`);
+});
 
 export default app;
